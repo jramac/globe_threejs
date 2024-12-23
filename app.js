@@ -3,7 +3,7 @@ import vertexShader from './shaders/vertex.glsl';
 import fragmentShader from './shaders/fragment.glsl';
 import atmosphereVertexShader from './shaders/atmosphereVertex.glsl';
 import atmosphereFragmentShader from './shaders/atmosphereFragment.glsl';
-import { EffectComposer, RenderPass, ShaderPass } from 'three/examples/jsm/Addons.js';
+import { EffectComposer, RectAreaLightHelper, RectAreaLightUniformsLib, RenderPass, ShaderPass } from 'three/examples/jsm/Addons.js';
 import emissiveMaterial from './emissiveMaterial.js';
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -46,8 +46,15 @@ atmosphere.scale.set(3.1,3.1,3.1);
 //atmosphere.position.set(5,5,5);
 scene.add(atmosphere)
 
-camera.position.z = 9;
+camera.position.z = 15;
 //sphere.rotation.z = (23.5/180)*Math.PI;
+RectAreaLightUniformsLib.init();
+const light = new THREE.RectAreaLight(0xfed33c, 1.0, 10.0, 20.0)
+light.position.set(10,0,0);
+light.lookAt(0,0,0);
+scene.add(light)
+const helper = new RectAreaLightHelper(light);
+light.add(helper)
 
 const composer =  new EffectComposer(renderer);
 const renderPass = new RenderPass(scene,camera);
@@ -58,7 +65,7 @@ composer.addPass(shaderPass);
 function animate(){
     requestAnimationFrame(animate)
     composer.render(scene,camera);
-    sphere.rotation.y += 0.001
+    sphere.rotation.y += 0.002
 }
 
 animate();
