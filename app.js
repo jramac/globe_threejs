@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import vertexShader from './shaders/vertex.glsl';
 import fragmentShader from './shaders/fragment.glsl';
-import atmosphereVertexShader from './shaders/atmosphereVertex.glsl';
-import atmosphereFragmentShader from './shaders/atmosphereFragment.glsl';
+import vertexPost from './shaders/vertexPost.glsl';
+import fragmentPost from './shaders/fragmentPost.glsl';
 import { EffectComposer, RectAreaLightHelper, RectAreaLightUniformsLib, RenderPass, ShaderPass } from 'three/examples/jsm/Addons.js';
 import emissiveMaterial from './emissiveMaterial.js';
+import emissiveMaterialOriginal from './emissiveMaterialOriginal.js';
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     75,
@@ -25,8 +27,8 @@ const sphere = new THREE.Mesh(
         vertexShader,
         fragmentShader,
         uniforms:{
-            globeTexture:{
-                value: new THREE.TextureLoader().load('./img/globe.jpg')
+            uMap:{
+                value: new THREE.TextureLoader().load('./img/map.jpg')
             }
         }
     })
@@ -34,29 +36,33 @@ const sphere = new THREE.Mesh(
 scene.add(sphere)
 //atmosfera
 const atmosphere = new THREE.Mesh(
-    new THREE.SphereGeometry(5,50,50),
+    new THREE.SphereGeometry(0.5,30,30),
     new THREE.ShaderMaterial({
-        vertexShader: atmosphereVertexShader,
-        fragmentShader: atmosphereFragmentShader,
+        vertexShader: vertexPost,
+        fragmentShader: fragmentPost,
         blending: THREE.AdditiveBlending,
         side: THREE.BackSide
     })
 )
 atmosphere.scale.set(3.1,3.1,3.1);
-scene.add(atmosphere)
+//scene.add(atmosphere)
 
-camera.position.z = 15;
+camera.position.z = 10;
 
 const composer =  new EffectComposer(renderer);
 const renderPass = new RenderPass(scene,camera);
 composer.addPass(renderPass);
+//--------> TV SHADER <---------
 const shaderPass = new ShaderPass(emissiveMaterial);
 composer.addPass(shaderPass);
+
+const shaderPass2 = new ShaderPass(emissiveMaterialOriginal);
+composer.addPass(shaderPass2);
 
 function animate(){
     requestAnimationFrame(animate)
     composer.render(scene,camera);
-    sphere.rotation.y += 0.002
+    sphere.rotation.y -= 0.002
 }
 
 animate();

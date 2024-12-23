@@ -18,29 +18,35 @@ const emissiveMaterial = new THREE.ShaderMaterial({
         varying vec2 vUv;            // UV coordinates
         uniform float uScale;        // Uniform for scaling the texture
 
+        float rand(vec2 co){
+            return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+        }
+
         void main() {
-            vec2 p = vUv;
+            vec4 c = texture2D(tDiffuse, vUv);
 
-            // Apply scaling centered around (0.5, 0.5)
-            vec2 centeredUv = p - 0.5; // Shift UV to center
-            centeredUv *= uScale;      // Apply scale factor
-            p = centeredUv + 0.5;      // Shift back
+            vec2 toCenter = vec2(0.5)-vUv;
 
-            // Sample the rendered scene texture
-            vec4 color = texture2D(tDiffuse, p);
-            
-            // Generate a brightness pattern (old TV style)
-            float brightness =  0.5 + 0.5 * sin(vUv.y * 1400.0 + time * 10.0); // Sine waves for scanlines
+            vec4 original = c;
 
-            vec4 cr = texture2D(tDiffuse, p + vec2(0.002, 0.0));
-            vec4 cg = texture2D(tDiffuse, p);
-            vec4 cb = texture2D(tDiffuse, p - vec2(0.002, 0.0));
+            c += texture2D(tDiffuse, vUv + toCenter*0.1);
 
-            vec3 preFinish = vec3(cr.r, cg.g, cb.b);
-            vec3 finalColor = mix(preFinish.rgb, vec3(brightness), 0.1);
+            vec4 color = vec4(0.0);
 
-            // Output the final color
-            gl_FragColor = vec4(finalColor, color.a);
+            float total = 0.0;
+            for(float i = 0.; i < 40.; i++){
+                float lerp = (i + rand(vec2(vUv)))/40.;
+                float weight = cos(lerp*3.1415926/2.);
+                vec4 mysample = texture2D(tDiffuse,vUv + toCenter*lerp*0.6);
+                mysample.rgb *= mysample.a;
+                color += mysample*weight;
+                total += weight;
+            }
+            color.a = 1.0;
+            color.rgb /= 4.;
+
+            vec4 finalColor = 1. - (1.-color)*(1.-original);
+            gl_FragColor = finalColor;
         }
     `,
     side: THREE.DoubleSide,
