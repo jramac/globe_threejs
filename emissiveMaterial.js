@@ -25,6 +25,9 @@ const emissiveMaterial = new THREE.ShaderMaterial({
         void main() {
             vec4 c = texture2D(tDiffuse, vUv);
 
+            float distance = sin(distance(vUv,vec2(0.5,0.5))*1.)+0.3;
+
+            c.rgb*=1.0-distance;
             vec2 toCenter = vec2(0.5)-vUv;
 
             vec4 original = c;
@@ -37,16 +40,16 @@ const emissiveMaterial = new THREE.ShaderMaterial({
             for(float i = 0.; i < 40.; i++){
                 float lerp = (i + rand(vec2(vUv)))/40.;
                 float weight = cos(lerp*3.1415926/2.);
-                vec4 mysample = texture2D(tDiffuse,vUv + toCenter*lerp*0.6);
+                vec4 mysample = texture2D(tDiffuse,vUv + toCenter*lerp*0.45);
                 mysample.rgb *= mysample.a;
                 color += mysample*weight;
                 total += weight;
             }
             color.a = 1.0;
-            color.rgb /= 4.;
-
+            color.rgb /= 5.;
             vec4 finalColor = 1. - (1.-color)*(1.-original);
             gl_FragColor = finalColor;
+            //gl_FragColor = vec4(distance,0.,0.,1.);
         }
     `,
     side: THREE.DoubleSide,
