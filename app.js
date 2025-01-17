@@ -34,18 +34,8 @@ const sphere = new THREE.Mesh(
     })
 )
 scene.add(sphere)
-//atmosfera
-const atmosphere = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5,30,30),
-    new THREE.ShaderMaterial({
-        vertexShader: vertexPost,
-        fragmentShader: fragmentPost,
-        blending: THREE.AdditiveBlending,
-        side: THREE.BackSide
-    })
-)
-atmosphere.scale.set(3.1,3.1,3.1);
-//scene.add(atmosphere)
+
+
 
 camera.position.z = 10;
 
@@ -59,10 +49,17 @@ composer.addPass(shaderPass);
 const shaderPass2 = new ShaderPass(emissiveMaterialOriginal);
 composer.addPass(shaderPass2);
 
+let scrollPosition = 0;
+window.addEventListener("wheel", (event) => {
+    event.preventDefault(); // Prevent page scrolling
+    scrollPosition -= event.deltaY * 0.002; // Adjust sensitivity
+    sphere.rotation.x = scrollPosition; // Rotate based on scroll
+  }, { passive: false });
+
 function animate(){
     requestAnimationFrame(animate)
     composer.render(scene,camera);
-    sphere.rotation.y -= 0.002
+    //sphere.rotation.y -= 0.002
 }
 
 animate();

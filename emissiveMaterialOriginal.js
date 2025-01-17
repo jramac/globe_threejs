@@ -21,7 +21,11 @@ const emissiveMaterial = new THREE.ShaderMaterial({
         void main() {
             vec2 p = vUv;
             vec2 toCenter = vec2(0.5)-vUv;
-            
+
+
+            float distance = distance(vUv,vec2(0.5,0.5))*0.05;
+
+            //float distancee = 5.;
             // Apply scaling centered around (0.5, 0.5)
             vec2 centeredUv = p - 0.5; // Shift UV to center
             centeredUv *= uScale;      // Apply scale factor
@@ -31,14 +35,19 @@ const emissiveMaterial = new THREE.ShaderMaterial({
             vec4 color = texture2D(tDiffuse, p);
             
             // Generate a brightness pattern (old TV style)
-            float brightness =  0.5 + 0.5 * sin(vUv.y * 1400.0 + time * 10.0); // Sine waves for scanlines
+            float brightness =  0.5 + 0.5 * sin(vUv.y * 1400.0 + time * 100.0); // Sine waves for scanlines
 
-            vec4 cr = texture2D(tDiffuse, p + vec2(0.002, 0.0));
+            vec4 cr = texture2D(tDiffuse, p + vec2(0.2*distance, 0.0));
             vec4 cg = texture2D(tDiffuse, p);
-            vec4 cb = texture2D(tDiffuse, p - vec2(0.002, 0.0));
+            vec4 cb = texture2D(tDiffuse, p - vec2(0.2*distance, 0.0));
 
             vec3 preFinish = vec3(cr.r, cg.g, cb.b);
             vec3 finalColor = mix(preFinish.rgb, vec3(brightness), 0.1);
+            //finalColor.g-=5.*distance;
+            finalColor.r+=2.*distance;
+            finalColor.b+=4.*distance;
+            //finalColor-=1.6*distance;
+
 
             // Output the final color
             gl_FragColor = vec4(finalColor, color.a);
