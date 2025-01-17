@@ -28,16 +28,17 @@ const sphere = new THREE.Mesh(
         fragmentShader,
         uniforms:{
             uMap:{
-                value: new THREE.TextureLoader().load('./img/map.jpg')
+                value: new THREE.TextureLoader().load('./img/tex-modified.png')
             }
         }
     })
 )
 scene.add(sphere)
+//sphere.position.y = 4;
 
 
 
-camera.position.z = 10;
+camera.position.z = 8;
 
 const composer =  new EffectComposer(renderer);
 const renderPass = new RenderPass(scene,camera);
@@ -52,7 +53,7 @@ composer.addPass(shaderPass2);
 let scrollPosition = 0;
 window.addEventListener("wheel", (event) => {
     event.preventDefault(); // Prevent page scrolling
-    scrollPosition -= event.deltaY * 0.002; // Adjust sensitivity
+    scrollPosition -= event.deltaY * 0.001; // Adjust sensitivity
     sphere.rotation.x = scrollPosition; // Rotate based on scroll
   }, { passive: false });
 
