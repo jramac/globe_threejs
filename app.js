@@ -22,7 +22,7 @@ document.body.appendChild(renderer.domElement);
 
 //create a sphere
 const sphere = new THREE.Mesh(
-    new THREE.SphereGeometry(5,50,50),
+    new THREE.CylinderGeometry(1,1,3,7),
     new THREE.ShaderMaterial({
         vertexShader,
         fragmentShader,
@@ -32,13 +32,15 @@ const sphere = new THREE.Mesh(
             }
         }
     })
+    //new THREE.MeshNormalMaterial()
 )
 scene.add(sphere)
+sphere.rotation.z = Math.PI/2;
 //sphere.position.y = 4;
 
 
 
-camera.position.z = 8;
+camera.position.z = 2;
 
 const composer =  new EffectComposer(renderer);
 const renderPass = new RenderPass(scene,camera);
