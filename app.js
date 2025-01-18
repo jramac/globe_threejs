@@ -21,6 +21,10 @@ renderer.setPixelRatio(window.devicePixelRatio)
 document.body.appendChild(renderer.domElement);
 
 //create a sphere
+const textureLoader = new THREE.TextureLoader();
+const texture = textureLoader.load('./img/cylinderTex.png');
+texture.rotation = Math.PI/2;
+texture.center.set(0.5, 0.5);
 const sphere = new THREE.Mesh(
     new THREE.CylinderGeometry(1,1,3,7),
     new THREE.ShaderMaterial({
@@ -28,11 +32,11 @@ const sphere = new THREE.Mesh(
         fragmentShader,
         uniforms:{
             uMap:{
-                value: new THREE.TextureLoader().load('./img/tex-modified.png')
+                value: new THREE.TextureLoader().load('./img/cylinderTex.png')
             }
         }
     })
-    //new THREE.MeshNormalMaterial()
+   // new THREE.MeshBasicMaterial({map:texture})
 )
 scene.add(sphere)
 sphere.rotation.z = Math.PI/2;
@@ -40,17 +44,17 @@ sphere.rotation.z = Math.PI/2;
 
 
 
-camera.position.z = 2;
+camera.position.z = 5;
 
 const composer =  new EffectComposer(renderer);
 const renderPass = new RenderPass(scene,camera);
 composer.addPass(renderPass);
 //--------> TV SHADER <---------
 const shaderPass = new ShaderPass(emissiveMaterial);
-composer.addPass(shaderPass);
+//composer.addPass(shaderPass);
 
 const shaderPass2 = new ShaderPass(emissiveMaterialOriginal);
-composer.addPass(shaderPass2);
+//composer.addPass(shaderPass2);
 
 let scrollPosition = 0;
 window.addEventListener("wheel", (event) => {
